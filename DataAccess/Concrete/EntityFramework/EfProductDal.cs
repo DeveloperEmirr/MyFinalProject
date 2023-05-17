@@ -1,4 +1,6 @@
-﻿using DataAccess.Abstract;
+﻿using Core.DataAccess.EntityFramework;
+using Core.Entities;
+using DataAccess.Abstract;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,60 +12,25 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfProductDal : IProductDal
+    public class EfProductDal : EfEntityRepositoryBase<Product, NorthwindContext>, IProductDal
     {
-        public void Add(Product entity)
-        {
-            //using yazıp tab tab yaptık IDispossable pattern implementation of c# // belleği hızlıca temizleme
-            using (NorthwindContext context=new NorthwindContext())
-            {
-                var addedEntity = context.Entry(entity); //Product entity git burdan eriş demek
-                addedEntity.State = EntityState.Added; //ekle
-                context.SaveChanges(); // kaydet gerçekleştir demek bu işlem
-            }
-        }
-
-        public void Delete(Product entity)
-        {
-            //using yazıp tab tab yaptık IDispossable pattern implementation of c# // belleği hızlıca temizleme
-            using (NorthwindContext context = new NorthwindContext())
-            {
-                var deletedEntity = context.Entry(entity); //Product entity git burdan eriş demek
-                deletedEntity.State = EntityState.Deleted; //sil
-                context.SaveChanges(); // kaydet gerçekleştir demek bu işlem
-            }
-        }
-
-        public Product Get(Expression<Func<Product, bool>> filter)
-        {
-            using (NorthwindContext context = new NorthwindContext())
-            {
-                return context.Set<Product>().SingleOrDefault(filter);
-                //filtrelenen ürünü döndürecek ekranda
-            }
-        }
-
-        public List<Product> GetAll(Expression<Func<Product, bool>> filter = null)
+        public List<ProductDetailDto> GetProductDetailDtos()
         {
             using (NorthwindContext context=new NorthwindContext())
             {
-                return filter == null 
-                    ? context.Set<Product>().ToList() :
-                    context.Set<Product>().Where(filter).ToList();
-
-                //filtre null ise yani bişe göndermezsek context.Set<Product>().ToList() burası
-                //context.Set<Product>().Where(filter).ToList(); buda gönderdiğimiz filtreye göre işlem yapıyor
-            }
-        }
-
-        public void Update(Product entity)
-        {
-            //using yazıp tab tab yaptık IDispossable pattern implementation of c# // belleği hızlıca temizleme
-            using (NorthwindContext context = new NorthwindContext())
-            {
-                var updatedEntity = context.Entry(entity); //Product entity git burdan eriş demek
-                updatedEntity.State = EntityState.Modified; //güncelle 
-                context.SaveChanges(); // kaydet gerçekleştir demek bu işlem
+                var result = from p in context.Products
+                             join c in context.Categories
+                             on p.CategoryId equals c.CategoryId
+                             select new ProductDetailDto
+                             {
+                                 ProductId = p.ProductId,
+                                 ProductName = p.ProductName,
+                                 CategoryName = c.CategoryName,
+                                 UnitsInStock = p.UnitsInStock
+                             };
+                return result.ToList();
+                //burada veritabanında joinleme işlemi yaptık ve burada gösterceğimiz yerleri
+                //select new ile gösterdik
             }
         }
     }

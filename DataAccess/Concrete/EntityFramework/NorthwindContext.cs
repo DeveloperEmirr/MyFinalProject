@@ -19,11 +19,13 @@ namespace DataAccess.Concrete.EntityFramework
             //Server=(localdb)\MSSQLLocalDB=veri tabanı bulundugu yer
             //Database=Northwind; kullacağımız tablo 
             //Truted_Connection=true" Vt nında şifreleme olmasın
+            
         }
 
         //alttakiler de benim hangi clasım hangi tabloya karşılık geliyor onları yazıyoruz
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }

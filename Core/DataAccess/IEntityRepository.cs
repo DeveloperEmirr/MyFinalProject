@@ -1,4 +1,4 @@
-﻿using Entities.Abstract;
+﻿using Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Abstract
+namespace Core.DataAccess //core katmanları diğer katmanları referans almaz
 {
     //generic constraint : kısıtlama getirmek temek
     //where  T:class,IEntity bu sadece Ientitynin eşlik ettiği clasları kullan dedik burada

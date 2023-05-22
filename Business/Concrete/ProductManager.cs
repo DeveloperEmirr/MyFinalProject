@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Core.Entities;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -19,24 +21,49 @@ namespace Business.Concrete
             _productDal = productDal;
         }
 
-        public List<Product> GetAllByCategoryId(int id)
+        public IResult Add(Product product)
         {
-            return _productDal.GetAll(p => p.CategoryId == id);
+            if (product.ProductName.Length<2)
+            {
+                return new ErrorResult(Messages.ProductNameInvalid);
+            }
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
         }
 
-        public List<Product> GetAllByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice<=max);
+            return new SuccesDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
-        public List<ProductDetailDto> GetProductDetailDtos()
+        public IDataResult<List<Product>> GetAllByUnitPrice(decimal min, decimal max)
         {
-            return _productDal.GetProductDetailDtos();
+            return new SuccesDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice<=max));
         }
 
-        public List<Product> GettAll()
+        public IDataResult<Product> GetById(int productId)
         {
-            return _productDal.GetAll();
+            return new SuccesDataResult<Product>(_productDal.Get(p=>p.ProductId==productId));
+        }
+
+        public IDataResult<List<ProductDetailDto>> GetProductDetailDtos()
+        {
+            if (DateTime.Now.Hour == 13)
+            {
+                return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
+                //saatt 22.00 olunca listelenme çalışmasın demek için ypatık bunu
+            }
+            return new SuccesDataResult<List<ProductDetailDto>>(_productDal.GetProductDetailDtos());
+        }
+
+        public IDataResult<List<Product>> GettAll()
+        {
+            if (DateTime.Now.Hour==22)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+                //saatt 22.00 olunca listelenme çalışmasın demek için ypatık bunu
+            }
+            return new SuccesDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductListed);
         }
     }
 }

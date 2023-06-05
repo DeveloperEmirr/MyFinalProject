@@ -1,9 +1,13 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.AutoFac.Validation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Entities;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +25,13 @@ namespace Business.Concrete
             _productDal = productDal;
         }
 
+        [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            if (product.ProductName.Length<2)
-            {
-                return new ErrorResult(Messages.ProductNameInvalid);
-            }
+            //validation codes
+           
+
+            //bussines codes
             _productDal.Add(product);
             return new SuccessResult(Messages.ProductAdded);
         }
@@ -38,12 +43,12 @@ namespace Business.Concrete
 
         public IDataResult<List<Product>> GetAllByUnitPrice(decimal min, decimal max)
         {
-            return new SuccesDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice<=max));
+            return new SuccesDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
         }
 
         public IDataResult<Product> GetById(int productId)
         {
-            return new SuccesDataResult<Product>(_productDal.Get(p=>p.ProductId==productId));
+            return new SuccesDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
 
         public IDataResult<List<ProductDetailDto>> GetProductDetailDtos()
@@ -58,7 +63,7 @@ namespace Business.Concrete
 
         public IDataResult<List<Product>> GettAll()
         {
-            if (DateTime.Now.Hour==22)
+            if (DateTime.Now.Hour == 22)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
                 //saatt 22.00 olunca listelenme çalışmasın demek için ypatık bunu

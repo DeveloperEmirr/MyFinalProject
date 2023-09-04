@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Business.Abstract;
+using Business.CCS;
 using Business.Concrete;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
@@ -23,6 +24,11 @@ namespace Business.DependencyResolvers.AutoFac
             builder.RegisterType<ProductManager>().As<IProductService>().SingleInstance();
             //biri senden IProductDal isterse EfProductDal ver demek
             builder.RegisterType<EfProductDal>().As<IProductDal>().SingleInstance();
+
+
+            builder.RegisterType<CategoryManager>().As<ICategoryService>().SingleInstance();
+            //biri senden ICategoryDal isterse EfCategoryDal ver demek
+            builder.RegisterType<EfCategoryDal>().As<ICategoryDal>().SingleInstance();
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 

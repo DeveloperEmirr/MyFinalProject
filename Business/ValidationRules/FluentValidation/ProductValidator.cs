@@ -18,13 +18,13 @@ namespace Business.ValidationRules.FluentValidation
             RuleFor(p => p.UnitPrice).NotEmpty();
             RuleFor(p => p.UnitPrice).GreaterThan(0);// 0 dan büyük olmalı fiyatı
 
-            RuleFor(p => p.ProductName).Must(StrartWithA).WithMessage("Ürünler A Harfi İle Başlamalı");
+            //RuleFor(p => p.ProductName).Must(StrartWithA).WithMessage("Ürünler A Harfi İle Başlamalı");
             //must yardımı ile istediğimiz komutu kendimiz yazabiliriz.
         }
 
-        private bool StrartWithA(string arg)
-        {
-            return arg.StartsWith("A");
-        }
+        //private bool StrartWithA(string arg)
+        //{
+        //    return arg.StartsWith("A");
+        //}
     }
 }

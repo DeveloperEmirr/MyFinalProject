@@ -3,6 +3,8 @@ using Business.BusinessAspects.Autofac;
 using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.AutoFac.Caching;
+using Core.Aspects.AutoFac.Transaction;
 using Core.Aspects.AutoFac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Entities;
@@ -32,6 +34,7 @@ namespace Business.Concrete
 
         }
         [SecuredOperation("product.add, admin")]// yetki kontrolü yapmak için
+        [CacheRemoveAspect("IProductService.Get")]// IProductService getleri sil demek
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
@@ -66,6 +69,7 @@ namespace Business.Concrete
             return new SuccesDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
         }
 
+        [CacheAspect]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccesDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
@@ -81,6 +85,7 @@ namespace Business.Concrete
             return new SuccesDataResult<List<ProductDetailDto>>(_productDal.GetProductDetailDtos());
         }
 
+        [CacheAspect] //key, value
         public IDataResult<List<Product>> GettAll()
         {
             if (DateTime.Now.Hour == 22)
@@ -93,6 +98,7 @@ namespace Business.Concrete
 
 
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]// IProductService getleri sil demek
         public IResult Update(Product product)
         {
             throw new NotImplementedException();
@@ -132,6 +138,12 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            _productDal.Update(product);
+            _productDal.Add(product);
+            return new SuccessResult("Ürün Gönderildi");
+        }
     }
 }
